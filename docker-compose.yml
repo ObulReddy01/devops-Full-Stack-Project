@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: student-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: studentdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    image: student-backend
+    container_name: student-backend
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/studentdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: student-frontend
+    container_name: student-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  mysql_data:
